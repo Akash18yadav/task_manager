@@ -1,5 +1,4 @@
 
-
 // import 'dart:convert';
 
 // import 'package:flutter/services.dart';
@@ -19,6 +18,10 @@
 //   List<ProjectModel>? _projects;
 //   List<TaskModel>? _tasks;
 
+//   // ============================================================
+//   // LOAD MOCK DATA
+//   // ============================================================
+
 //   Future<Map<String, dynamic>> _loadData() async {
 //     if (_mockData != null) {
 //       return _mockData!;
@@ -34,23 +37,18 @@
 //     return _mockData!;
 //   }
 
-//   // ============================================================
-//   // AUTH
-//   // ============================================================
-
+  
 //   Future<Map<String, dynamic>> login({
 //     required String email,
 //     required String password,
 //   }) async {
-//     // Simulate API delay
 //     await Future.delayed(
 //       const Duration(seconds: 1),
 //     );
 
 //     final data = await _loadData();
 
-//     final authMock =
-//         Map<String, dynamic>.from(
+//     final authMock = Map<String, dynamic>.from(
 //       data['auth_mock'] ?? {},
 //     );
 
@@ -59,22 +57,27 @@
 //       authMock['test_credentials'] ?? [],
 //     );
 
-//     final user = credentials.cast<Map<String, dynamic>?>().firstWhere(
-//       (item) {
-//         if (item == null) {
-//           return false;
-//         }
+//     Map<String, dynamic>? matchedCredential;
 
-//         return item['email']
-//                     .toString()
-//                     .toLowerCase() ==
-//                 email.trim().toLowerCase() &&
-//             item['password'].toString() == password;
-//       },
-//       orElse: () => null,
-//     );
+//     for (final credential in credentials) {
+//       final mockEmail = credential['email']
+//           .toString()
+//           .trim()
+//           .toLowerCase();
 
-//     if (user == null) {
+//       final mockPassword = credential['password']
+//           .toString()
+//           .trim();
+
+//       if (mockEmail ==
+//               email.trim().toLowerCase() &&
+//           mockPassword == password.trim()) {
+//         matchedCredential = credential;
+//         break;
+//       }
+//     }
+
+//     if (matchedCredential == null) {
 //       throw Exception(
 //         'Invalid email or password',
 //       );
@@ -85,10 +88,10 @@
 
 //     UserModel? matchedUser;
 
-//     for (final item in users) {
-//       if (item.email.toLowerCase() ==
+//     for (final user in users) {
+//       if (user.email.trim().toLowerCase() ==
 //           email.trim().toLowerCase()) {
-//         matchedUser = item;
+//         matchedUser = user;
 //         break;
 //       }
 //     }
@@ -101,25 +104,25 @@
 
 //     return {
 //       'user_id': matchedUser.id,
-//       'organization_id': user['org_id'],
-//       'role': user['role'],
+//       'organization_id':
+//           matchedCredential['org_id'],
+//       'role':
+//           matchedCredential['role'],
 
-//       // Mock tokens
 //       'access_token':
 //           'mock_access_token_${matchedUser.id}',
 
 //       'refresh_token':
 //           'mock_refresh_token_${matchedUser.id}',
 
-//       // 1 hour expiry
-//       'expires_at':
-//           DateTime.now()
-//               .add(
-//                 const Duration(hours: 1),
-//               )
-//               .toIso8601String(),
+//       'expires_at': DateTime.now()
+//           .add(
+//             const Duration(hours: 1),
+//           )
+//           .toIso8601String(),
 //     };
 //   }
+
 
 //   Future<Map<String, dynamic>>
 //       getAuthMockData() async {
@@ -296,6 +299,99 @@
 //     return List.from(_tasks!);
 //   }
 
+//   // GET TASK BY ID
+
+//   Future<TaskModel?> getTaskById(
+//     String taskId,
+//   ) async {
+//     final tasks = await getTasks();
+
+//     for (final task in tasks) {
+//       if (task.id == taskId) {
+//         return task;
+//       }
+//     }
+
+//     return null;
+//   }
+
+//   // GET ALL TASKS OF A PROJECT
+
+//   Future<List<TaskModel>> getTasksByProject(
+//     String projectId,
+//   ) async {
+//     final tasks = await getTasks();
+
+//     return tasks
+//         .where(
+//           (task) =>
+//               task.projectId == projectId,
+//         )
+//         .toList();
+//   }
+
+//   // ADD TASK
+
+//   Future<TaskModel> addTask(
+//     TaskModel task,
+//   ) async {
+//     final tasks = await getTasks();
+
+//     tasks.add(task);
+
+//     _tasks = tasks;
+
+//     return task;
+//   }
+
+//   // UPDATE TASK
+
+//   Future<TaskModel> updateTask(
+//     TaskModel task,
+//   ) async {
+//     final tasks = await getTasks();
+
+//     final index = tasks.indexWhere(
+//       (item) => item.id == task.id,
+//     );
+
+//     if (index == -1) {
+//       throw Exception(
+//         'Task not found',
+//       );
+//     }
+
+//     tasks[index] = task;
+
+//     _tasks = tasks;
+
+//     return task;
+//   }
+
+//   // DELETE TASK
+
+//   Future<void> deleteTask(
+//     String taskId,
+//   ) async {
+//     final tasks = await getTasks();
+
+//     final exists = tasks.any(
+//       (task) => task.id == taskId,
+//     );
+
+//     if (!exists) {
+//       throw Exception(
+//         'Task not found',
+//       );
+//     }
+
+//     tasks.removeWhere(
+//       (task) => task.id == taskId,
+//     );
+
+//     _tasks = tasks;
+//   }
+
 //   // ============================================================
 //   // COMMENTS
 //   // ============================================================
@@ -332,6 +428,7 @@
 //         .toList();
 //   }
 // }
+
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -357,109 +454,31 @@ class MockDataSource {
 
   Future<Map<String, dynamic>> _loadData() async {
     if (_mockData != null) {
+      print('📦 Using cached mock data');
       return _mockData!;
     }
+
+    print('📂 Loading JSON from: ${AssetConstants.mockData}');
 
     final jsonString = await rootBundle.loadString(
       AssetConstants.mockData,
     );
 
-    _mockData = jsonDecode(jsonString)
-        as Map<String, dynamic>;
+    print('📄 JSON loaded successfully');
+    print('📏 JSON length: ${jsonString.length}');
+
+    _mockData =
+        jsonDecode(jsonString) as Map<String, dynamic>;
+
+    print('🔑 JSON Keys: ${_mockData!.keys.toList()}');
 
     return _mockData!;
   }
 
   // ============================================================
-  // AUTH
+  // LOGIN
   // ============================================================
 
-  // Future<Map<String, dynamic>> login({
-  //   required String email,
-  //   required String password,
-  // }) async {
-  //   await Future.delayed(
-  //     const Duration(seconds: 1),
-  //   );
-
-  //   final data = await _loadData();
-
-  //   final authMock = Map<String, dynamic>.from(
-  //     data['auth_mock'] ?? {},
-  //   );
-
-  //   final credentials =
-  //       List<Map<String, dynamic>>.from(
-  //     authMock['test_credentials'] ?? [],
-  //   );
-
-  //   Map<String, dynamic>? matchedCredential;
-
-  //   for (final credential in credentials) {
-  //     final mockEmail = credential['email']
-  //         .toString()
-  //         .trim()
-  //         .toLowerCase();
-
-  //     final mockPassword = credential['password']
-  //         .toString()
-  //         .trim();
-
-  //     if (mockEmail ==
-  //             email.trim().toLowerCase() &&
-  //         mockPassword == password.trim()) {
-  //       matchedCredential = credential;
-  //       break;
-  //     }
-  //   }
-
-  //   if (matchedCredential == null) {
-  //     throw Exception(
-  //       'Invalid email or password',
-  //     );
-  //   }
-
-  //   // Find complete user information
-  //   final users = await getUsers();
-
-  //   UserModel? matchedUser;
-
-  //   for (final user in users) {
-  //     if (user.email.trim().toLowerCase() ==
-  //         email.trim().toLowerCase()) {
-  //       matchedUser = user;
-  //       break;
-  //     }
-  //   }
-
-  //   if (matchedUser == null) {
-  //     throw Exception(
-  //       'User not found in mock data',
-  //     );
-  //   }
-
-  //   return {
-  //     'user_id': matchedUser.id,
-  //     'organization_id':
-  //         matchedCredential['org_id'],
-  //     'role':
-  //         matchedCredential['role'],
-
-  //     'access_token':
-  //         'mock_access_token_${matchedUser.id}',
-
-  //     'refresh_token':
-  //         'mock_refresh_token_${matchedUser.id}',
-
-  //     'expires_at': DateTime.now()
-  //         .add(
-  //           const Duration(hours: 1),
-  //         )
-  //         .toIso8601String(),
-  //   };
-  // }
-
-  
   Future<Map<String, dynamic>> login({
     required String email,
     required String password,
@@ -467,6 +486,10 @@ class MockDataSource {
     await Future.delayed(
       const Duration(seconds: 1),
     );
+
+    print('');
+    print('========== LOGIN START ==========');
+    print('Email: $email');
 
     final data = await _loadData();
 
@@ -477,6 +500,10 @@ class MockDataSource {
     final credentials =
         List<Map<String, dynamic>>.from(
       authMock['test_credentials'] ?? [],
+    );
+
+    print(
+      'Total credentials: ${credentials.length}',
     );
 
     Map<String, dynamic>? matchedCredential;
@@ -493,25 +520,34 @@ class MockDataSource {
 
       if (mockEmail ==
               email.trim().toLowerCase() &&
-          mockPassword == password.trim()) {
+          mockPassword ==
+              password.trim()) {
         matchedCredential = credential;
         break;
       }
     }
 
     if (matchedCredential == null) {
+      print('❌ Invalid credentials');
+
       throw Exception(
         'Invalid email or password',
       );
     }
 
-    // Find complete user information
+    print('✅ Credential matched');
+    print(
+      'Organization ID: ${matchedCredential['org_id']}',
+    );
+
     final users = await getUsers();
 
     UserModel? matchedUser;
 
     for (final user in users) {
-      if (user.email.trim().toLowerCase() ==
+      if (user.email
+              .trim()
+              .toLowerCase() ==
           email.trim().toLowerCase()) {
         matchedUser = user;
         break;
@@ -524,19 +560,19 @@ class MockDataSource {
       );
     }
 
+    print('✅ User found: ${matchedUser.id}');
+    print('========== LOGIN END ==========');
+
     return {
       'user_id': matchedUser.id,
       'organization_id':
           matchedCredential['org_id'],
       'role':
           matchedCredential['role'],
-
       'access_token':
           'mock_access_token_${matchedUser.id}',
-
       'refresh_token':
           'mock_refresh_token_${matchedUser.id}',
-
       'expires_at': DateTime.now()
           .add(
             const Duration(hours: 1),
@@ -545,6 +581,9 @@ class MockDataSource {
     };
   }
 
+  // ============================================================
+  // AUTH MOCK DATA
+  // ============================================================
 
   Future<Map<String, dynamic>>
       getAuthMockData() async {
@@ -568,6 +607,11 @@ class MockDataSource {
       data['organizations'] ?? [],
     );
 
+    print(
+      '🏢 Total Organizations: '
+      '${organizations.length}',
+    );
+
     return organizations
         .map(OrganizationModel.fromJson)
         .toList();
@@ -583,6 +627,10 @@ class MockDataSource {
     final users =
         List<Map<String, dynamic>>.from(
       data['users'] ?? [],
+    );
+
+    print(
+      '👤 Total Users: ${users.length}',
     );
 
     return users
@@ -603,6 +651,11 @@ class MockDataSource {
       data['org_members'] ?? [],
     );
 
+    print(
+      '👥 Total Org Members: '
+      '${members.length}',
+    );
+
     return members
         .map(OrgMemberModel.fromJson)
         .toList();
@@ -612,22 +665,102 @@ class MockDataSource {
   // PROJECTS
   // ============================================================
 
-  Future<List<ProjectModel>>
-      getProjects() async {
+  Future<List<ProjectModel>> getProjects() async {
+    print('');
+    print('========== MOCK DATA PROJECTS START ==========');
+
     if (_projects != null) {
+      print(
+        '📦 Returning cached projects: '
+        '${_projects!.length}',
+      );
+
+      for (final project in _projects!) {
+        print(
+          'Cached Project: '
+          '${project.name}',
+        );
+
+        print(
+          'ID: ${project.id}',
+        );
+
+        print(
+          'Organization ID: '
+          '${project.organizationId}',
+        );
+      }
+
       return List.from(_projects!);
     }
 
     final data = await _loadData();
 
-    final projects =
+    print(
+      'Available JSON keys: '
+      '${data.keys.toList()}',
+    );
+
+    final rawProjects =
         List<Map<String, dynamic>>.from(
       data['projects'] ?? [],
     );
 
-    _projects = projects
+    print(
+      '📊 Total RAW Projects: '
+      '${rawProjects.length}',
+    );
+
+    print('');
+
+    // RAW JSON DEBUG
+    for (final projectJson in rawProjects) {
+      print('---------- RAW PROJECT JSON ----------');
+      print(projectJson);
+      print(
+        'id = ${projectJson['id']}',
+      );
+
+      print(
+        'organization_id = '
+        '${projectJson['organization_id']}',
+      );
+
+      print(
+        'organizationId = '
+        '${projectJson['organizationId']}',
+      );
+
+      print('-------------------------------------');
+    }
+
+    _projects = rawProjects
         .map(ProjectModel.fromJson)
         .toList();
+
+    print('');
+    print('========== PARSED PROJECTS ==========');
+
+    for (final project in _projects!) {
+      print(
+        'Project Name: ${project.name}',
+      );
+
+      print(
+        'Project ID: ${project.id}',
+      );
+
+      print(
+        'Parsed Organization ID: '
+        '${project.organizationId}',
+      );
+
+      print('-----------------------------');
+    }
+
+    print(
+      '========== MOCK DATA PROJECTS END ==========',
+    );
 
     return List.from(_projects!);
   }
@@ -655,6 +788,10 @@ class MockDataSource {
 
     _projects = projects;
 
+    print(
+      '➕ Project added: ${project.name}',
+    );
+
     return project;
   }
 
@@ -668,12 +805,18 @@ class MockDataSource {
     );
 
     if (index == -1) {
-      throw Exception('Project not found');
+      throw Exception(
+        'Project not found',
+      );
     }
 
     projects[index] = project;
 
     _projects = projects;
+
+    print(
+      '✏️ Project updated: ${project.name}',
+    );
 
     return project;
   }
@@ -684,18 +827,26 @@ class MockDataSource {
     final projects = await getProjects();
 
     final exists = projects.any(
-      (project) => project.id == projectId,
+      (project) =>
+          project.id == projectId,
     );
 
     if (!exists) {
-      throw Exception('Project not found');
+      throw Exception(
+        'Project not found',
+      );
     }
 
     projects.removeWhere(
-      (project) => project.id == projectId,
+      (project) =>
+          project.id == projectId,
     );
 
     _projects = projects;
+
+    print(
+      '🗑️ Project deleted: $projectId',
+    );
   }
 
   // ============================================================
@@ -703,20 +854,65 @@ class MockDataSource {
   // ============================================================
 
   Future<List<TaskModel>> getTasks() async {
+    print('');
+    print('========== MOCK DATA TASKS START ==========');
+
     if (_tasks != null) {
+      print(
+        '📦 Returning cached tasks: '
+        '${_tasks!.length}',
+      );
+
       return List.from(_tasks!);
     }
 
     final data = await _loadData();
 
-    final tasks =
+    final rawTasks =
         List<Map<String, dynamic>>.from(
       data['tasks'] ?? [],
     );
 
-    _tasks = tasks
+    print(
+      '📊 Total RAW Tasks: '
+      '${rawTasks.length}',
+    );
+
+    for (final taskJson in rawTasks) {
+      print('---------- RAW TASK ----------');
+      print(taskJson);
+      print(
+        'Project ID: '
+        '${taskJson['project_id']}',
+      );
+    }
+
+    _tasks = rawTasks
         .map(TaskModel.fromJson)
         .toList();
+
+    print('');
+    print('========== PARSED TASKS ==========');
+
+    for (final task in _tasks!) {
+      print(
+        'Task: ${task.title}',
+      );
+
+      print(
+        'Task ID: ${task.id}',
+      );
+
+      print(
+        'Project ID: ${task.projectId}',
+      );
+
+      print('-----------------------------');
+    }
+
+    print(
+      '========== MOCK DATA TASKS END ==========',
+    );
 
     return List.from(_tasks!);
   }
@@ -739,17 +935,30 @@ class MockDataSource {
 
   // GET ALL TASKS OF A PROJECT
 
-  Future<List<TaskModel>> getTasksByProject(
+  Future<List<TaskModel>>
+      getTasksByProject(
     String projectId,
   ) async {
     final tasks = await getTasks();
 
-    return tasks
+    final filteredTasks = tasks
         .where(
           (task) =>
               task.projectId == projectId,
         )
         .toList();
+
+    print('');
+    print(
+      '📋 Tasks for Project: $projectId',
+    );
+
+    print(
+      'Total Tasks Found: '
+      '${filteredTasks.length}',
+    );
+
+    return filteredTasks;
   }
 
   // ADD TASK
@@ -762,6 +971,10 @@ class MockDataSource {
     tasks.add(task);
 
     _tasks = tasks;
+
+    print(
+      '➕ Task added: ${task.title}',
+    );
 
     return task;
   }
@@ -787,6 +1000,10 @@ class MockDataSource {
 
     _tasks = tasks;
 
+    print(
+      '✏️ Task updated: ${task.title}',
+    );
+
     return task;
   }
 
@@ -798,7 +1015,8 @@ class MockDataSource {
     final tasks = await getTasks();
 
     final exists = tasks.any(
-      (task) => task.id == taskId,
+      (task) =>
+          task.id == taskId,
     );
 
     if (!exists) {
@@ -808,10 +1026,15 @@ class MockDataSource {
     }
 
     tasks.removeWhere(
-      (task) => task.id == taskId,
+      (task) =>
+          task.id == taskId,
     );
 
     _tasks = tasks;
+
+    print(
+      '🗑️ Task deleted: $taskId',
+    );
   }
 
   // ============================================================

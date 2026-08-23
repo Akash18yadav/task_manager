@@ -20,35 +20,118 @@ class ProjectController extends GetxController {
 
   final selectedProject = Rxn<ProjectModel>();
 
+  // Future<void> loadProjects(
+  //   String organizationId,
+  // ) async {
+  //   try {
+  //     state.value = ViewState.loading;
+  //     errorMessage.value = '';
+
+  //     final result =
+  //         await repository.getProjects(
+  //       organizationId,
+  //     );
+
+  //     projects.assignAll(result);
+
+  //     if (projects.isEmpty) {
+  //       state.value = ViewState.empty;
+  //     } else {
+  //       state.value = ViewState.success;
+  //     }
+  //   } catch (e) {
+  //     errorMessage.value =
+  //         e.toString().replaceFirst(
+  //               'Exception: ',
+  //               '',
+  //             );
+
+  //     state.value = ViewState.error;
+  //   }
+  // }
+
   Future<void> loadProjects(
-    String organizationId,
-  ) async {
-    try {
-      state.value = ViewState.loading;
-      errorMessage.value = '';
+  String organizationId,
+) async {
+  try {
+    print('');
+    print('========== PROJECT CONTROLLER START ==========');
 
-      final result =
-          await repository.getProjects(
-        organizationId,
+    print(
+      'Controller received organizationId: '
+      '$organizationId',
+    );
+
+    state.value = ViewState.loading;
+
+    errorMessage.value = '';
+
+    print(
+      'Calling repository.getProjects()...',
+    );
+
+    final result =
+        await repository.getProjects(
+      organizationId,
+    );
+
+    print(
+      'Repository returned projects: '
+      '${result.length}',
+    );
+
+    for (final project in result) {
+      print(
+        'Controller Project: '
+        '${project.name}',
       );
-
-      projects.assignAll(result);
-
-      if (projects.isEmpty) {
-        state.value = ViewState.empty;
-      } else {
-        state.value = ViewState.success;
-      }
-    } catch (e) {
-      errorMessage.value =
-          e.toString().replaceFirst(
-                'Exception: ',
-                '',
-              );
-
-      state.value = ViewState.error;
     }
+
+    projects.assignAll(result);
+
+    print(
+      'RxList projects count: '
+      '${projects.length}',
+    );
+
+    if (projects.isEmpty) {
+      state.value = ViewState.empty;
+
+      print(
+        'State changed to EMPTY',
+      );
+    } else {
+      state.value = ViewState.success;
+
+      print(
+        'State changed to SUCCESS',
+      );
+    }
+
+    print(
+      '========== PROJECT CONTROLLER END ==========',
+    );
+  } catch (e, stackTrace) {
+    print('');
+    print('========== PROJECT ERROR ==========');
+
+    print(
+      'Error: $e',
+    );
+
+    print(
+      'StackTrace: $stackTrace',
+    );
+
+    errorMessage.value =
+        e.toString().replaceFirst(
+      'Exception: ',
+      '',
+    );
+
+    state.value = ViewState.error;
   }
+}
 
   Future<void> refreshProjects(
     String organizationId,
