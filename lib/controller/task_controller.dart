@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-import 'package:task_manager/screens/projects/task_repo.dart';
+import 'package:task_manager/repositories/task_repository.dart';
+// import 'package:task_manager/screens/projects/task_repo.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/enums/view_state.dart';
@@ -12,8 +13,12 @@ class TaskController extends GetxController {
     required this.repository,
   });
 
-final taskController =
-    Get.find<TaskController>();
+ @override
+  void onInit() {
+    super.onInit();
+
+    print('🔥 TaskController onInit called');
+  }
   final tasks = <TaskModel>[].obs;
 
   final state = ViewState.initial.obs;
@@ -328,7 +333,8 @@ final taskController =
 
   int getTaskCount(
     String projectId,
-  ) {
+  )
+   {
     return tasks
         .where(
           (task) =>
