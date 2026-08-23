@@ -1,10 +1,9 @@
 import 'package:get/get.dart';
-import 'package:task_manager/screens/projects/task_repository.dart';
+import 'package:task_manager/screens/projects/task_repo.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/enums/view_state.dart';
 import '../../data/models/task_model.dart';
-import '../../domain/repositories/task_repository.dart';
 
 class TaskController extends GetxController {
   final TaskRepository repository;

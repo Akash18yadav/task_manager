@@ -22,6 +22,8 @@ class _TaskFormScreenState
     extends State<TaskFormScreen> {
   final formKey =
       GlobalKey<FormState>();
+        final taskController =
+      Get.find<TaskController>();
 
   final titleController =
       TextEditingController();
@@ -29,8 +31,7 @@ class _TaskFormScreenState
   final descriptionController =
       TextEditingController();
 
-  final taskController =
-      Get.find<TaskController>();
+ 
 
   final authController =
       Get.find<AuthController>();

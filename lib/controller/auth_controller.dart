@@ -133,10 +133,10 @@
 // }
 
 import 'package:get/get.dart';
+import 'package:task_manager/repositories/auth_repository.dart';
 
 import '../../core/enums/view_state.dart';
 import '../../data/models/auth_models.dart';
-import '../../domain/repositories/auth_repository.dart';
 
 class AuthController extends GetxController {
   final AuthRepository repository;
@@ -190,45 +190,48 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> checkSession() async {
-    try {
-      state.value = ViewState.loading;
+Future<void> checkSession() async {
+  Get.offAllNamed('/login');
+}
+  // Future<void> checkSession() async {
+  //   try {
+  //     state.value = ViewState.loading;
 
-      final session =
-          await repository.getCurrentSession();
+  //     final session =
+  //         await repository.getCurrentSession();
 
-      // User login nahi hai
-      if (session == null) {
-        currentSession.value = null;
+  //     // User login nahi hai
+  //     if (session == null) {
+  //       currentSession.value = null;
 
-        // VERY IMPORTANT
-        state.value = ViewState.initial;
+  //       // VERY IMPORTANT
+  //       state.value = ViewState.initial;
 
-        Get.offAllNamed('/login');
+  //       Get.offAllNamed('/login');
 
-        return;
-      }
+  //       return;
+  //     }
 
-      currentSession.value = session;
+  //     currentSession.value = session;
 
-      // Session expire ho gaya
-      if (session.isExpired) {
-        await refreshSession();
-      } else {
-        // Session valid hai
-        state.value = ViewState.success;
+  //     // Session expire ho gaya
+  //     if (session.isExpired) {
+  //       await refreshSession();
+  //     } else {
+  //       // Session valid hai
+  //       state.value = ViewState.success;
 
-        Get.offAllNamed('/home');
-      }
-    } catch (e) {
-      currentSession.value = null;
+  //       Get.offAllNamed('/home');
+  //     }
+  //   } catch (e) {
+  //     currentSession.value = null;
 
-      // VERY IMPORTANT
-      state.value = ViewState.initial;
+  //     // VERY IMPORTANT
+  //     state.value = ViewState.initial;
 
-      Get.offAllNamed('/login');
-    }
-  }
+  //     Get.offAllNamed('/login');
+  //   }
+  // }
 
   Future<void> refreshSession() async {
     try {

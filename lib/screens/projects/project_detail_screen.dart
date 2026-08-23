@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:task_manager/controller/auth_controller.dart';
 import 'package:task_manager/controller/project_controller.dart';
+import 'package:task_manager/controller/task_controller.dart';
 
 class ProjectDetailScreen
     extends StatefulWidget {
@@ -19,6 +20,8 @@ class _ProjectDetailScreenState
     extends State<ProjectDetailScreen> {
   final projectController =
       Get.find<ProjectController>();
+        final taskController =
+      Get.find<TaskController>();
 
   final authController =
       Get.find<AuthController>();

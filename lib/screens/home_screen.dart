@@ -1,23 +1,18 @@
-// import 'package:flutter/material.dart';
 
-// class HomeScreen extends StatelessWidget {
-//   const HomeScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('TaskFlow'),
-//       ),
-//       body: const Center(
-//         child: Text('Home Screen'),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:task_manager/app/routes/app_routes.dart';
 import 'package:task_manager/controller/auth_controller.dart';
+import 'package:task_manager/controller/project_controller.dart';
+import 'package:task_manager/controller/task_controller.dart';
+import 'package:task_manager/data/datasources/mock/mock_data_source.dart';
+import 'package:task_manager/repositories/project_repository.dart';
+import 'package:task_manager/repositories/project_repository_impl.dart';
+import 'package:task_manager/repositories/task_repository.dart';
+import 'package:task_manager/screens/projects/project_list_screen.dart';
+import 'package:task_manager/screens/projects/task_repo.dart';
+import 'package:task_manager/screens/task/task_list_screen.dart';
+
 
 // import '../../controllers/auth_controller.dart';
 
@@ -28,6 +23,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authController =
         Get.find<AuthController>();
+   
 
     return Scaffold(
       appBar: AppBar(
@@ -101,12 +97,62 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton.icon(
   onPressed: () {
-    Get.toNamed('/projects');
+
+     // ProjectRepository register
+    if (!Get.isRegistered<ProjectRepository>()) {
+      Get.put<ProjectRepository>(
+        ProjectRepositoryImpl(
+          mockDataSource: Get.find<MockDataSource>(),
+        ),
+        permanent: true,
+      );
+    }
+  if (!Get.isRegistered<ProjectController>()) {
+    Get.put<ProjectController>(
+      ProjectController(
+        repository: Get.find<ProjectRepository>(),
+      ),
+    );
+  }
+    Navigator.push(context, MaterialPageRoute(
+      builder: (context) => const ProjectListScreen(),
+    ));
   },
   icon: const Icon(Icons.folder),
   label: const Text('View Projects'),
 ),
 const SizedBox(height: 30),
+
+              const SizedBox(height: 30),
+              ElevatedButton.icon(
+  onPressed: () {
+     // TaskRepository register
+    // if (!Get.isRegistered<TaskRepository>()) {
+    //   Get.put<TaskRepository>(
+    //     TaskRepositoryImpl(
+    //       mockDataSource: Get.find<MockDataSource>(),
+    //     ),
+    //     permanent: true,
+    //   );
+    // }
+
+    // // TaskController register
+    // if (!Get.isRegistered<TaskController>()) {
+    //   Get.put<TaskController>(
+    //     TaskController(
+    //       repository: Get.find<TaskRepository>(),
+    //     ),
+    //   );
+    // }
+
+      Navigator.push(context, MaterialPageRoute(
+      builder: (context) => const TaskListScreen(),
+    ));
+  },
+  icon: const Icon(Icons.folder),
+  label: const Text('task'),
+),
+
 
               ElevatedButton.icon(
                 onPressed: () {

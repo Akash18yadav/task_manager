@@ -1,15 +1,14 @@
-import 'package:task_manager/screens/projects/task_repository.dart';
+import 'package:task_manager/screens/projects/task_repo.dart';
 
 import '../../data/datasources/mock/mock_data_source.dart';
 import '../../data/models/org_member_model.dart';
 import '../../data/models/task_model.dart';
-import '../../domain/repositories/task_repository.dart';
 
-class TaskRepositoryImpl
+class TaskRepositoryImplfunction
     implements TaskRepository {
   final MockDataSource mockDataSource;
 
-  TaskRepositoryImpl({
+  TaskRepositoryImplfunction({
     required this.mockDataSource,
   });
 

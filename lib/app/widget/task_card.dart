@@ -5,6 +5,7 @@ import '../../data/models/task_model.dart';
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback onTap;
+   
 
   const TaskCard({
     super.key,

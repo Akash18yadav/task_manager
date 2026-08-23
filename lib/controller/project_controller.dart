@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+import 'package:task_manager/repositories/project_repository.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../core/enums/view_state.dart';
 import '../../data/models/project_model.dart';
-import '../../domain/repositories/project_repository.dart';
 
 class ProjectController extends GetxController {
   final ProjectRepository repository;
