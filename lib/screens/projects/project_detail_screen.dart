@@ -129,6 +129,21 @@ class _ProjectDetailScreenState
                       FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 16),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton.icon(
+    onPressed: () {
+      Get.toNamed(
+        '/tasks',
+        arguments: project.id,
+      );
+    },
+    icon: const Icon(Icons.task),
+    label: const Text('View Tasks'),
+  ),
+),
 
               const SizedBox(height: 10),
 

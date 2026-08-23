@@ -1,5 +1,10 @@
+
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
+import 'package:get/get.dart';
+
+import 'app/bindings/initial_binding.dart';
+import 'app/routes/app_pages.dart';
+import 'app/routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,16 +15,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Mock API Test',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-        ),
-        useMaterial3: true,
-      ),
-      home: const HomeScreen(),
+
+      // IMPORTANT
+      initialBinding: InitialBinding(),
+
+      initialRoute: AppRoutes.splash,
+
+      getPages: AppPages.pages,
     );
   }
 }

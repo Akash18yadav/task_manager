@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:task_manager/app/widget/project_card.dart';
 import 'package:task_manager/controller/auth_controller.dart';
 import 'package:task_manager/controller/project_controller.dart';
+import 'package:task_manager/controller/task_controller.dart';
 
 import '../../../core/enums/view_state.dart';
 
@@ -24,17 +25,41 @@ class _ProjectListScreenState
 
   final authController =
       Get.find<AuthController>();
+      final taskController =
+    Get.find<TaskController>();
 
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   Future.microtask(() {
+  //     projectController.loadProjects(
+  //       authController.currentOrganizationId,
+  //     );
+  //   });
+  // }
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
 
-    Future.microtask(() {
-      projectController.loadProjects(
-        authController.currentOrganizationId,
-      );
-    });
-  }
+  Future.microtask(() async {
+    await projectController.loadProjects(
+      authController.currentOrganizationId,
+    );
+
+    final projectIds =
+        projectController.projects
+            .map(
+              (project) => project.id,
+            )
+            .toList();
+
+    await taskController
+        .loadAllTasksForProjects(
+      projectIds,
+    );
+  });
+}
 
   int getTaskCount(String projectId) {
     // Part 5 mein TaskController use hoga.
