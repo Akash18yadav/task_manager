@@ -853,189 +853,439 @@ class MockDataSource {
   // TASKS
   // ============================================================
 
-  Future<List<TaskModel>> getTasks() async {
-    print('');
-    print('========== MOCK DATA TASKS START ==========');
+  // Future<List<TaskModel>> getTasks() async {
+  //   print('');
+  //   print('========== MOCK DATA TASKS START ==========');
 
-    if (_tasks != null) {
-      print(
-        '📦 Returning cached tasks: '
-        '${_tasks!.length}',
-      );
+  //   if (_tasks != null) {
+  //     print(
+  //       '📦 Returning cached tasks: '
+  //       '${_tasks!.length}',
+  //     );
 
-      return List.from(_tasks!);
-    }
+  //     return List.from(_tasks!);
+  //   }
 
-    final data = await _loadData();
+  //   final data = await _loadData();
 
-    final rawTasks =
-        List<Map<String, dynamic>>.from(
-      data['tasks'] ?? [],
-    );
+  //   final rawTasks =
+  //       List<Map<String, dynamic>>.from(
+  //     data['tasks'] ?? [],
+  //   );
 
+  //   print(
+  //     '📊 Total RAW Tasks: '
+  //     '${rawTasks.length}',
+  //   );
+
+  //   for (final taskJson in rawTasks) {
+  //     print('---------- RAW TASK ----------');
+  //     print(taskJson);
+  //     print(
+  //       'Project ID: '
+  //       '${taskJson['project_id']}',
+  //     );
+  //   }
+
+  //   _tasks = rawTasks
+  //       .map(TaskModel.fromJson)
+  //       .toList();
+
+  //   print('');
+  //   print('========== PARSED TASKS ==========');
+
+  //   for (final task in _tasks!) {
+  //     print(
+  //       'Task: ${task.title}',
+  //     );
+
+  //     print(
+  //       'Task ID: ${task.id}',
+  //     );
+
+  //     print(
+  //       'Project ID: ${task.projectId}',
+  //     );
+
+  //     print('-----------------------------');
+  //   }
+
+  //   print(
+  //     '========== MOCK DATA TASKS END ==========',
+  //   );
+
+  //   return List.from(_tasks!);
+  // }
+
+  // // GET TASK BY ID
+
+  // Future<TaskModel?> getTaskById(
+  //   String taskId,
+  // ) async {
+  //   final tasks = await getTasks();
+
+  //   for (final task in tasks) {
+  //     if (task.id == taskId) {
+  //       return task;
+  //     }
+  //   }
+
+  //   return null;
+  // }
+
+  // // GET ALL TASKS OF A PROJECT
+
+  // Future<List<TaskModel>>
+  //     getTasksByProject(
+  //   String projectId,
+  // ) async {
+  //   final tasks = await getTasks();
+
+  //   final filteredTasks = tasks
+  //       .where(
+  //         (task) =>
+  //             task.projectId == projectId,
+  //       )
+  //       .toList();
+
+  //   print('');
+  //   print(
+  //     '📋 Tasks for Project: $projectId',
+  //   );
+
+  //   print(
+  //     'Total Tasks Found: '
+  //     '${filteredTasks.length}',
+  //   );
+
+  //   return filteredTasks;
+  // }
+
+  // // ADD TASK
+
+  // Future<TaskModel> addTask(
+  //   TaskModel task,
+  // ) async {
+  //   final tasks = await getTasks();
+
+  //   tasks.add(task);
+
+  //   _tasks = tasks;
+
+  //   print(
+  //     '➕ Task added: ${task.title}',
+  //   );
+
+  //   return task;
+  // }
+
+  // // UPDATE TASK
+
+  // Future<TaskModel> updateTask(
+  //   TaskModel task,
+  // ) async {
+  //   final tasks = await getTasks();
+
+  //   final index = tasks.indexWhere(
+  //     (item) => item.id == task.id,
+  //   );
+
+  //   if (index == -1) {
+  //     throw Exception(
+  //       'Task not found',
+  //     );
+  //   }
+
+  //   tasks[index] = task;
+
+  //   _tasks = tasks;
+
+  //   print(
+  //     '✏️ Task updated: ${task.title}',
+  //   );
+
+  //   return task;
+  // }
+
+  // // DELETE TASK
+
+  // Future<void> deleteTask(
+  //   String taskId,
+  // ) async {
+  //   final tasks = await getTasks();
+
+  //   final exists = tasks.any(
+  //     (task) =>
+  //         task.id == taskId,
+  //   );
+
+  //   if (!exists) {
+  //     throw Exception(
+  //       'Task not found',
+  //     );
+  //   }
+
+  //   tasks.removeWhere(
+  //     (task) =>
+  //         task.id == taskId,
+  //   );
+
+  //   _tasks = tasks;
+
+  //   print(
+  //     '🗑️ Task deleted: $taskId',
+  //   );
+  // }
+
+  // ============================================================
+// TASKS
+// ============================================================
+
+Future<List<TaskModel>> getTasks() async {
+  print('\n========== MOCK DATA SOURCE: GET TASKS ==========');
+
+  if (_tasks != null) {
     print(
-      '📊 Total RAW Tasks: '
-      '${rawTasks.length}',
-    );
-
-    for (final taskJson in rawTasks) {
-      print('---------- RAW TASK ----------');
-      print(taskJson);
-      print(
-        'Project ID: '
-        '${taskJson['project_id']}',
-      );
-    }
-
-    _tasks = rawTasks
-        .map(TaskModel.fromJson)
-        .toList();
-
-    print('');
-    print('========== PARSED TASKS ==========');
-
-    for (final task in _tasks!) {
-      print(
-        'Task: ${task.title}',
-      );
-
-      print(
-        'Task ID: ${task.id}',
-      );
-
-      print(
-        'Project ID: ${task.projectId}',
-      );
-
-      print('-----------------------------');
-    }
-
-    print(
-      '========== MOCK DATA TASKS END ==========',
+      'Using cached tasks: ${_tasks!.length}',
     );
 
     return List.from(_tasks!);
   }
 
-  // GET TASK BY ID
+  final data = await _loadData();
 
-  Future<TaskModel?> getTaskById(
-    String taskId,
-  ) async {
-    final tasks = await getTasks();
+  print(
+    'Raw tasks key exists: ${data.containsKey('tasks')}',
+  );
 
-    for (final task in tasks) {
-      if (task.id == taskId) {
-        return task;
-      }
-    }
+  final rawTasks =
+      data['tasks'] ?? [];
 
-    return null;
-  }
+  print(
+    'Raw tasks count: ${rawTasks.length}',
+  );
 
-  // GET ALL TASKS OF A PROJECT
+  final tasks =
+      List<Map<String, dynamic>>.from(
+    rawTasks,
+  );
 
-  Future<List<TaskModel>>
-      getTasksByProject(
-    String projectId,
-  ) async {
-    final tasks = await getTasks();
+  _tasks = tasks
+      .map(
+        (json) {
+          final task =
+              TaskModel.fromJson(json);
 
-    final filteredTasks = tasks
-        .where(
-          (task) =>
-              task.projectId == projectId,
-        )
-        .toList();
+          print(
+            'Parsed Task => '
+            'ID: ${task.id} | '
+            'Project ID: ${task.projectId} | '
+            'Title: ${task.title}',
+          );
 
-    print('');
-    print(
-      '📋 Tasks for Project: $projectId',
-    );
+          return task;
+        },
+      )
+      .toList();
 
-    print(
-      'Total Tasks Found: '
-      '${filteredTasks.length}',
-    );
+  print(
+    'Total Parsed Tasks: ${_tasks!.length}',
+  );
 
-    return filteredTasks;
-  }
+  print(
+    '========== MOCK DATA SOURCE END ==========\n',
+  );
 
-  // ADD TASK
+  return List.from(_tasks!);
+}
 
-  Future<TaskModel> addTask(
-    TaskModel task,
-  ) async {
-    final tasks = await getTasks();
 
-    tasks.add(task);
+// ============================================================
+// GET TASK BY ID
+// ============================================================
 
-    _tasks = tasks;
+Future<TaskModel?> getTaskById(
+  String taskId,
+) async {
+  print(
+    '\nSearching Task ID: $taskId',
+  );
 
-    print(
-      '➕ Task added: ${task.title}',
-    );
+  final tasks =
+      await getTasks();
 
-    return task;
-  }
-
-  // UPDATE TASK
-
-  Future<TaskModel> updateTask(
-    TaskModel task,
-  ) async {
-    final tasks = await getTasks();
-
-    final index = tasks.indexWhere(
-      (item) => item.id == task.id,
-    );
-
-    if (index == -1) {
-      throw Exception(
-        'Task not found',
+  for (final task in tasks) {
+    if (task.id == taskId) {
+      print(
+        'Task Found: ${task.title}',
       );
+
+      return task;
     }
-
-    tasks[index] = task;
-
-    _tasks = tasks;
-
-    print(
-      '✏️ Task updated: ${task.title}',
-    );
-
-    return task;
   }
 
-  // DELETE TASK
+  print(
+    'Task NOT FOUND',
+  );
 
-  Future<void> deleteTask(
-    String taskId,
-  ) async {
-    final tasks = await getTasks();
+  return null;
+}
 
-    final exists = tasks.any(
-      (task) =>
-          task.id == taskId,
+
+// ============================================================
+// GET TASKS BY PROJECT
+// ============================================================
+
+Future<List<TaskModel>> getTasksByProject(
+  String projectId,
+) async {
+  print(
+    '\n========== GET TASKS BY PROJECT =========='
+  );
+
+  print(
+    'Requested Project ID: $projectId',
+  );
+
+  final tasks =
+      await getTasks();
+
+  print(
+    'Total Available Tasks: ${tasks.length}',
+  );
+
+  print('\n---------- ALL TASK PROJECT IDs ----------');
+
+  for (final task in tasks) {
+    print(
+      'Task: ${task.title}',
     );
-
-    if (!exists) {
-      throw Exception(
-        'Task not found',
-      );
-    }
-
-    tasks.removeWhere(
-      (task) =>
-          task.id == taskId,
-    );
-
-    _tasks = tasks;
 
     print(
-      '🗑️ Task deleted: $taskId',
+      'Task ID: ${task.id}',
+    );
+
+    print(
+      'Task Project ID: ${task.projectId}',
+    );
+
+    print('-----------------------------');
+  }
+
+  final filteredTasks =
+      tasks.where(
+    (task) =>
+        task.projectId.trim() ==
+        projectId.trim(),
+  ).toList();
+
+  print(
+    'Filtered Task Count: ${filteredTasks.length}',
+  );
+
+  for (final task in filteredTasks) {
+    print(
+      'MATCHED TASK: ${task.title}',
     );
   }
+
+  print(
+    '========== GET TASKS BY PROJECT END ==========\n',
+  );
+
+  return filteredTasks;
+}
+
+
+// ============================================================
+// ADD TASK
+// ============================================================
+
+Future<TaskModel> addTask(
+  TaskModel task,
+) async {
+  final tasks =
+      await getTasks();
+
+  tasks.add(task);
+
+  _tasks = tasks;
+
+  print(
+    'Task Added: ${task.title}',
+  );
+
+  return task;
+}
+
+
+// ============================================================
+// UPDATE TASK
+// ============================================================
+
+Future<TaskModel> updateTask(
+  TaskModel task,
+) async {
+  final tasks =
+      await getTasks();
+
+  final index =
+      tasks.indexWhere(
+    (item) =>
+        item.id == task.id,
+  );
+
+  if (index == -1) {
+    throw Exception(
+      'Task not found',
+    );
+  }
+
+  tasks[index] = task;
+
+  _tasks = tasks;
+
+  print(
+    'Task Updated: ${task.title}',
+  );
+
+  return task;
+}
+
+
+// ============================================================
+// DELETE TASK
+// ============================================================
+
+Future<void> deleteTask(
+  String taskId,
+) async {
+  final tasks =
+      await getTasks();
+
+  final exists =
+      tasks.any(
+    (task) =>
+        task.id == taskId,
+  );
+
+  if (!exists) {
+    throw Exception(
+      'Task not found',
+    );
+  }
+
+  tasks.removeWhere(
+    (task) =>
+        task.id == taskId,
+  );
+
+  _tasks = tasks;
+
+  print(
+    'Task Deleted: $taskId',
+  );
+}
 
   // ============================================================
   // COMMENTS

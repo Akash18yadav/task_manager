@@ -19,6 +19,7 @@ class TaskDetailScreen
 
 class _TaskDetailScreenState
     extends State<TaskDetailScreen> {
+        String selectedStatus = 'todo';
   final taskController =
       Get.find<TaskController>();
 
@@ -200,35 +201,64 @@ class _TaskDetailScreenState
 
         Expanded(
           child:
-              DropdownButton<String>(
-            value: task.status,
-            isExpanded: true,
-            items: const [
-              DropdownMenuItem(
-                value: 'todo',
-                child: Text('To Do'),
-              ),
-              DropdownMenuItem(
-                value: 'in_progress',
-                child:
-                    Text('In Progress'),
-              ),
-              DropdownMenuItem(
-                value: 'completed',
-                child:
-                    Text('Completed'),
-              ),
-            ],
-            onChanged: (value) {
-              if (value != null) {
-                taskController
-                    .updateTaskStatus(
-                  task: task,
-                  status: value,
-                );
-              }
-            },
-          ),
+          //     DropdownButton<String>(
+          //   value: task.status,
+          //   isExpanded: true,
+          //   items: const [
+          //     DropdownMenuItem(
+          //       value: 'todo',
+          //       child: Text('To Do'),
+          //     ),
+          //     DropdownMenuItem(
+          //       value: 'in_progress',
+          //       child:
+          //           Text('In Progress'),
+          //     ),
+          //     DropdownMenuItem(
+          //       value: 'completed',
+          //       child:
+          //           Text('Completed'),
+          //     ),
+          //   ],
+          //   onChanged: (value) {
+          //     if (value != null) {
+          //       taskController
+          //           .updateTaskStatus(
+          //         task: task,
+          //         status: value,
+          //       );
+          //     }
+          //   },
+          // ),
+          DropdownButton<String>(
+  value: selectedStatus,
+  isExpanded: true,
+  items: const [
+    DropdownMenuItem(
+      value: 'todo',
+      child: Text('To Do'),
+    ),
+    DropdownMenuItem(
+      value: 'in_progress',
+      child: Text('In Progress'),
+    ),
+    DropdownMenuItem(
+      value: 'review',
+      child: Text('Review'),
+    ),
+    DropdownMenuItem(
+      value: 'done',
+      child: Text('Done'),
+    ),
+  ],
+  onChanged: (value) {
+    if (value != null) {
+      setState(() {
+        selectedStatus = value;
+      });
+    }
+  },
+)
         ),
       ],
     );

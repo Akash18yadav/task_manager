@@ -111,19 +111,30 @@ class HomeScreen extends StatelessWidget {
 const SizedBox(height: 30),
 
               const SizedBox(height: 30),
+
               ElevatedButton.icon(
   onPressed: () {
-     Get.toNamed(
+    Get.toNamed(
       '/tasks',
-      arguments: 'project_1',
+      arguments: 'proj_1001',
     );
+  },
+  icon: const Icon(Icons.folder),
+  label: const Text('Task'),
+),
+//               ElevatedButton.icon(
+//   onPressed: () {
+//      Get.toNamed(
+//       '/tasks',
+//       arguments: 'project_1',
+//     );
    
 
     
-  },
-  icon: const Icon(Icons.folder),
-  label: const Text('task'),
-),
+//   },
+//   icon: const Icon(Icons.folder),
+//   label: const Text('task'),
+// ),
 
 
               ElevatedButton.icon(
